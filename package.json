@@ -1,0 +1,89 @@
+{
+  "name": "claude-profile-switcher",
+  "displayName": "Claude Profile Switcher",
+  "description": "Chuyển đổi nhiều account Claude Code (Pro/Max) theo từng cửa sổ/workspace VS Code bằng CLAUDE_CONFIG_DIR.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "*"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "claudeProfiles.switch",
+        "title": "Chuyển account cho workspace này",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.setDefault",
+        "title": "Đặt account mặc định (cho workspace chưa gán)",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.create",
+        "title": "Tạo profile mới",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.login",
+        "title": "Đăng nhập account cho profile",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.remove",
+        "title": "Xoá profile",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.openFolder",
+        "title": "Mở thư mục profile hiện tại",
+        "category": "Claude Profiles"
+      }
+    ],
+    "configuration": {
+      "title": "Claude Profiles",
+      "properties": {
+        "claudeProfiles.root": {
+          "type": "string",
+          "default": "~/.claude-profiles",
+          "scope": "application",
+          "description": "Thư mục chứa các profile. Mỗi thư mục con là một CLAUDE_CONFIG_DIR."
+        },
+        "claudeProfiles.sharedItems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "CLAUDE.md",
+            "commands",
+            "agents",
+            "skills"
+          ],
+          "scope": "application",
+          "description": "Các mục trong ~/.claude được symlink vào profile mới để dùng chung. Không chứa credentials."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --allow-missing-repository --skip-license"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "~1.94.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.6.0"
+  }
+}
