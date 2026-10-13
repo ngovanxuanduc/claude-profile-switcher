@@ -2,7 +2,7 @@
   "name": "claude-profile-switcher",
   "displayName": "Claude Profile Switcher",
   "description": "Chuyển đổi nhiều account Claude Code (Pro/Max) theo từng cửa sổ/workspace VS Code bằng CLAUDE_CONFIG_DIR.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "local",
   "private": true,
   "license": "UNLICENSED",
@@ -41,6 +41,16 @@
       {
         "command": "claudeProfiles.remove",
         "title": "Xoá profile",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.borrow",
+        "title": "Mượn tạm account khác (giữ conversation)",
+        "category": "Claude Profiles"
+      },
+      {
+        "command": "claudeProfiles.returnHome",
+        "title": "Trả về account gốc (mang conversation về)",
         "category": "Claude Profiles"
       },
       {

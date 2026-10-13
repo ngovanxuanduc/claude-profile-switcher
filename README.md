@@ -22,12 +22,33 @@ Extension làm việc cùng extension **Claude Code for VS Code** của Anthropi
 Yêu cầu: macOS, VS Code 1.94 trở lên, Node 18 trở lên, đã cài extension Claude Code for VS Code.
 
 ```bash
-npm install
-npm run package          # tạo claude-profile-switcher-0.1.0.vsix
-code --install-extension claude-profile-switcher-0.1.0.vsix
+./build.sh --install     # nâng version (0.1.0 -> 0.1.1), build .vsix và cài vào VS Code
 ```
 
 Sau đó Reload Window.
+
+### Build bản mới
+
+Script `build.sh` tự chạy `npm install` (nếu chưa có `node_modules`), nâng version trong `package.json`, compile rồi đóng gói thành `claude-profile-switcher-<version>.vsix`. Script không tạo commit hay tag.
+
+| Lệnh | Tác dụng |
+|---|---|
+| `./build.sh` | Nâng patch (vd `0.1.0` → `0.1.1`) rồi build. |
+| `./build.sh minor` / `./build.sh major` | Nâng minor (`0.2.0`) / major (`1.0.0`). |
+| `./build.sh 0.3.0` | Đặt version cụ thể. |
+| `./build.sh --no-bump` | Giữ nguyên version, chỉ build lại. |
+| Thêm `--install` | Cài luôn file `.vsix` vừa build vào VS Code. |
+
+Làm tay không dùng script:
+
+```bash
+npm version 0.1.1 --no-git-tag-version   # đổi version, không tạo commit/tag
+npm run compile
+npm run package                          # tạo claude-profile-switcher-0.1.1.vsix
+code --install-extension claude-profile-switcher-0.1.1.vsix
+```
+
+Sau khi cài, chạy **Reload Window**.
 
 ## Chạy thử khi phát triển
 
@@ -46,6 +67,8 @@ Mở Command Palette (`Cmd+Shift+P`), gõ `Claude Profiles`:
 | Tạo profile mới | Tạo thư mục, symlink các mục dùng chung, rồi đăng nhập. |
 | Đăng nhập account cho profile | Mở terminal và chạy `claude auth login --claudeai` với đúng `CLAUDE_CONFIG_DIR`. |
 | Xoá profile | Chạy `claude auth logout` (xoá token khỏi Keychain), sau đó xoá thư mục. Luôn hỏi xác nhận trước. |
+| Mượn tạm account khác (giữ conversation) | Chọn một conversation và một account khác. Conversation được copy sang account đó, cửa sổ reload rồi tự mở lại đúng conversation để chat tiếp. |
+| Trả về account gốc (mang conversation về) | Copy các conversation đã chat trong lúc mượn về account gốc, reload rồi mở lại. Khi đang mượn, bấm status bar cũng chạy lệnh này. |
 | Mở thư mục profile hiện tại | Mở thư mục trong Finder. |
 
 Quy trình lần đầu:
@@ -55,6 +78,20 @@ Quy trình lần đầu:
 3. Chọn **Reload Window**, mở panel Claude Code và gõ `/status` để kiểm tra email.
 
 Sau khi đổi account phải **Reload Window**: các phiên Claude đang mở vẫn chạy account cũ.
+
+## Mượn tạm account khác
+
+Dùng khi account A hết quota giữa chừng mà muốn chat tiếp **đúng conversation đó** bằng account B:
+
+1. Chạy **Mượn tạm account khác**, chọn conversation, rồi chọn account B (đã đăng nhập).
+2. Cửa sổ reload và mở lại conversation bằng account B. Status bar hiện `⇄ B (mượn)`.
+3. Khi A dùng lại được, bấm status bar (hoặc chạy **Trả về account gốc**), chọn conversation cần mang về. Cửa sổ reload và quay về A, chat tiếp từ chỗ đã dừng ở B.
+
+Cách hoạt động: conversation là file `projects/<cwd>/<session-id>.jsonl` trong thư mục profile, kèm checkpoint trong `file-history/<session-id>/`. Extension chỉ **copy** các file này giữa hai profile; bản ở account nguồn vẫn được giữ, token không bị đụng tới. Nếu conversation ở account gốc cũng bị chat thêm (ở cửa sổ khác) trong lúc mượn, extension sẽ hỏi trước khi ghi đè.
+
+Lưu ý:
+- Account mới không có prompt cache của account cũ, nên lượt chat đầu tiên sẽ tính token cho toàn bộ context. Conversation dài thì nên `/compact` trước khi mượn.
+- Trạng thái mượn gắn với workspace. Dùng **Chuyển account cho workspace này** trong lúc mượn sẽ bỏ trạng thái mượn và không copy conversation về.
 
 ## Cấu hình
 

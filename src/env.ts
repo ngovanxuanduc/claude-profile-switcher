@@ -59,6 +59,19 @@ export function claudeBinary(): string {
   return 'claude';
 }
 
+/**
+ * Mở (resume) một conversation trong panel Claude Code. Dùng chung command với URI
+ * `vscode://anthropic.claude-code/open?session=<id>` của extension Claude Code.
+ */
+export async function openClaudeSession(sessionId: string): Promise<void> {
+  const ext = vscode.extensions.getExtension(CLAUDE_EXTENSION_ID);
+  if (!ext) {
+    throw new Error('Chưa cài extension Claude Code.');
+  }
+  await ext.activate();
+  await vscode.commands.executeCommand('claude-vscode.editor.open', sessionId);
+}
+
 export function isClaudeExtensionActive(): boolean {
   return vscode.extensions.getExtension(CLAUDE_EXTENSION_ID)?.isActive ?? false;
 }
